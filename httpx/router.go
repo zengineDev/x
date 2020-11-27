@@ -20,7 +20,9 @@ func (r Router) Get(path string, f func(response Response, request Request)) {
 		res := Response{
 			writer: writer,
 		}
-		req := Request{}
+		req := Request{
+			Vars: mux.Vars(request),
+		}
 		f(res, req)
 	}).Methods(http.MethodGet)
 }
@@ -32,7 +34,9 @@ func (r *Router) Resource(path string, ctr ControllerContract) {
 		res := Response{
 			writer: writer,
 		}
-		req := Request{}
+		req := Request{
+			Vars: mux.Vars(request),
+		}
 		ctr.Index(res, req)
 	}).Methods(http.MethodGet)
 
@@ -42,7 +46,9 @@ func (r *Router) Resource(path string, ctr ControllerContract) {
 		res := Response{
 			writer: writer,
 		}
-		req := Request{}
+		req := Request{
+			Vars: mux.Vars(request),
+		}
 		ctr.Store(res, req)
 	}).Methods(http.MethodPost)
 
@@ -51,7 +57,9 @@ func (r *Router) Resource(path string, ctr ControllerContract) {
 		res := Response{
 			writer: writer,
 		}
-		req := Request{}
+		req := Request{
+			Vars: mux.Vars(request),
+		}
 		ctr.Get(res, req)
 	}).Methods(http.MethodGet)
 
@@ -59,7 +67,9 @@ func (r *Router) Resource(path string, ctr ControllerContract) {
 		res := Response{
 			writer: writer,
 		}
-		req := Request{}
+		req := Request{
+			Vars: mux.Vars(request),
+		}
 		ctr.Update(res, req)
 	}).Methods(http.MethodPut)
 
@@ -67,7 +77,9 @@ func (r *Router) Resource(path string, ctr ControllerContract) {
 		res := Response{
 			writer: writer,
 		}
-		req := Request{}
+		req := Request{
+			Vars: mux.Vars(request),
+		}
 		ctr.Delete(res, req)
 	}).Methods(http.MethodDelete)
 

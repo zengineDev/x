@@ -7,8 +7,7 @@ import (
 var validate *validator.Validate
 
 type Request struct {
-	Vars     map[string]string
-	Response Response
+	Vars map[string]string
 }
 
 type ValidationMessage struct {
@@ -21,7 +20,7 @@ type ValidationResponse struct {
 	Errors  []ValidationMessage
 }
 
-func (req *Request) Validate(body interface{}) {
+func (req *Request) Validate(body interface{}) ValidationResponse {
 
 	err := validate.Struct(body)
 	var responseBody ValidationResponse
@@ -41,5 +40,5 @@ func (req *Request) Validate(body interface{}) {
 
 	responseBody.Message = "Validation failed"
 
-	req.Response.ValidationErrors(responseBody)
+	return responseBody
 }

@@ -33,6 +33,19 @@ func (res Response) Json(body interface{}) {
 
 }
 
+func (res Response) ValidationErrors(errors ValidationResponse) {
+
+	res.writer.WriteHeader(http.StatusUnprocessableEntity)
+
+	data, err := json.Marshal(errors)
+	_, err = res.writer.Write(data)
+
+	if err != nil {
+		log.Error(err)
+	}
+
+}
+
 func (res Response) ErrorAsJson(err error) {
 
 	resBody := ErrorResponseBody{

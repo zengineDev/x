@@ -3,8 +3,9 @@ package authx
 import (
 	"context"
 	"encoding/json"
-	"github.com/zengineDev/x/jwtx"
 	"net/http"
+
+	"github.com/zengineDev/x/jwtx"
 )
 
 type FailedResponse struct {
@@ -21,7 +22,8 @@ func BearerAuthenticationMiddleware(next http.Handler) http.Handler {
 			_, err = w.Write(data)
 			return
 		}
-		token, err := jwt.New(tokenString)
+
+		token, err := jwtx.New(tokenString)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			resBody := FailedResponse{Message: "invalid token string"}

@@ -2,12 +2,15 @@ package httpx
 
 import (
 	"github.com/go-playground/validator/v10"
+	"io/ioutil"
+	"net/http"
 )
 
 var validate *validator.Validate
 
 type Request struct {
 	Vars map[string]string
+	Req  *http.Request
 }
 
 type ValidationMessage struct {
@@ -41,4 +44,8 @@ func (req *Request) Validate(body interface{}) ValidationResponse {
 	responseBody.Message = "Validation failed"
 
 	return responseBody
+}
+
+func (req *Request) Body() ([]byte, error) {
+	return ioutil.ReadAll(req.Req.Body)
 }

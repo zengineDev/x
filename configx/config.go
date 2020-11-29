@@ -22,9 +22,14 @@ type AppConfig struct {
 	Environment string `json:"environment"`
 }
 
+type NatsConfig struct {
+	Url string `json:"url"`
+}
+
 type Configuration struct {
-	App AppConfig `json:"app"`
-	Log LogConfig `json:"log"`
+	App  AppConfig  `json:"app"`
+	Log  LogConfig  `json:"log"`
+	Nats NatsConfig `json:"nats"`
 }
 
 var (

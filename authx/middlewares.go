@@ -23,7 +23,7 @@ func BearerAuthenticationMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		token, err := jwtx.New(tokenString)
+		token, err := jwtx.Parse(tokenString)
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
 			resBody := FailedResponse{Message: "invalid token string"}

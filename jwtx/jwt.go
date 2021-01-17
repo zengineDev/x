@@ -1,8 +1,12 @@
 package jwtx
 
 import (
+	"bytes"
 	"crypto"
+	"crypto/rand"
 	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base32"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -39,12 +43,20 @@ type Claims struct {
 
 type Token struct {
 	RawToken string
-	TokenHeader
+	Header   TokenHeader
 	Claims
 	Signature string
 }
 
-func New(rawTokenString string) (Token, error) {
+func NewFor() Token {
+	return Token{
+		Header: TokenHeader{
+			Typ: "JWT",
+		},
+	}
+}
+
+func Parse(rawTokenString string) (Token, error) {
 	var header TokenHeader
 	var claims Claims
 	tokenParts := strings.Split(rawTokenString, ".")
@@ -95,9 +107,60 @@ func (t *Token) Verify(pubKey *rsa.PublicKey) error {
 	return nil
 }
 
+func (t *Token) Sign(signingString string, key *rsa.PrivateKey) (string, error) {
+	// encode the token parts
+
+	f := crypto.SHA256.New()
+
+	f.Write([]byte(signingString))
+
+	// Sign the string and return the encoded bytes
+	if sigBytes, err := rsa.SignPKCS1v15(rand.Reader, key, crypto.SHA256, f.Sum(nil)); err == nil {
+		return EncodeSegment(sigBytes), nil
+	} else {
+		return "", err
+	}
+}
+
 func (t *Token) IsExpired() bool {
 	tm := time.Unix(t.ExpiresAt, 0)
 	return tm.Before(time.Now())
+}
+
+func (t *Token) SignedString(key *rsa.PrivateKey) (string, error) {
+	var sig, sstr string
+	var err error
+	if sstr, err = t.SigningString(); err != nil {
+		return "", err
+	}
+	if sig, err = t.Sign(sstr, key); err != nil {
+		return "", err
+	}
+	return strings.Join([]string{sstr, sig}, "."), nil
+}
+
+func (t *Token) SigningString() (string, error) {
+	var err error
+	parts := make([]string, 2)
+	for i, _ := range parts {
+		var jsonValue []byte
+		if i == 0 {
+			if jsonValue, err = json.Marshal(t.Header); err != nil {
+				return "", err
+			}
+		} else {
+			if jsonValue, err = json.Marshal(t.Claims); err != nil {
+				return "", err
+			}
+		}
+
+		parts[i] = EncodeSegment(jsonValue)
+	}
+	return strings.Join(parts, "."), nil
+}
+
+func EncodeSegment(seg []byte) string {
+	return strings.TrimRight(base64.URLEncoding.EncodeToString(seg), "=")
 }
 
 func DecodeSegment(seg string) ([]byte, error) {
@@ -106,4 +169,32 @@ func DecodeSegment(seg string) ([]byte, error) {
 	}
 
 	return base64.URLEncoding.DecodeString(seg)
+}
+
+func keyIDEncode(b []byte) string {
+	s := strings.TrimRight(base32.StdEncoding.EncodeToString(b), "=")
+	var buf bytes.Buffer
+	var i int
+	for i = 0; i < len(s)/4-1; i++ {
+		start := i * 4
+		end := start + 4
+		buf.WriteString(s[start:end] + ":")
+	}
+	buf.WriteString(s[i*4:])
+	return buf.String()
+}
+
+func KeyIDFromCryptoKey(pubKey *rsa.PublicKey) string {
+	// Generate and return a 'libtrust' fingerprint of the public key.
+	// For an RSA key this should be:
+	//   SHA256(DER encoded ASN1)
+	// Then truncated to 240 bits and encoded into 12 base32 groups like so:
+	//   ABCD:EFGH:IJKL:MNOP:QRST:UVWX:YZ23:4567:ABCD:EFGH:IJKL:MNOP
+	derBytes, err := x509.MarshalPKIXPublicKey(pubKey)
+	if err != nil {
+		return ""
+	}
+	hasher := crypto.SHA256.New()
+	hasher.Write(derBytes)
+	return keyIDEncode(hasher.Sum(nil)[:30])
 }

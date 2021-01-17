@@ -6,15 +6,28 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
+	"fmt"
 	"github.com/pkg/errors"
 	"math/big"
 )
 
 type JWK struct {
 	E   string `json:"e"`
-	N   string `json:"n"`
 	Kty string `json:"kty"`
+	N   string `json:"n"`
 	Kid string `json:"kid"`
+}
+
+func Encode(pub *rsa.PublicKey) (string, error) {
+	// https://tools.ietf.org/html/rfc7518#section-6.3.1
+	n := pub.N
+	e := big.NewInt(int64(pub.E))
+	// Field order is important.
+	// See https://tools.ietf.org/html/rfc7638#section-3.3 for details.
+	return fmt.Sprintf(`{"e":"%s","kty":"RSA","n":"%s"}`,
+		base64.RawURLEncoding.EncodeToString(e.Bytes()),
+		base64.RawURLEncoding.EncodeToString(n.Bytes()),
+	), nil
 }
 
 func (j *JWK) ToPublicKey() (*rsa.PublicKey, error) {

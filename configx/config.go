@@ -1,6 +1,7 @@
 package configx
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"os"
@@ -20,16 +21,66 @@ type AppConfig struct {
 	Version     string `json:"version"`
 	Port        int    `json:"port"`
 	Environment string `json:"environment"`
+	Domain      string `json:"domain"`
 }
 
-type NatsConfig struct {
-	Url string `json:"url"`
+type DatabaseConfig struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Database string `json:"database"`
+}
+
+type RedisConfig struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+}
+
+func (c DatabaseConfig) Validate() error {
+	if c.Host == "" {
+		return errors.New("database host is required")
+	}
+
+	if c.Port == 0 {
+		return errors.New("database port is required")
+	}
+
+	if c.User == "" {
+		return errors.New("database user is required")
+	}
+
+	if c.Database == "" {
+		return errors.New("database name is required")
+	}
+
+	return nil
+}
+
+func (c DatabaseConfig) ConnectionString() string {
+	return fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=require",
+		c.Host, c.Port, c.User, c.Password, c.Database)
 }
 
 type Configuration struct {
-	App  AppConfig  `json:"app"`
-	Log  LogConfig  `json:"log"`
-	Nats NatsConfig `json:"nats"`
+	App   AppConfig      `json:"app"`
+	Log   LogConfig      `json:"log"`
+	DB    DatabaseConfig `json:"db"`
+	Redis RedisConfig    `json:"redis"`
+	Nats  struct {
+		Url string
+	}
+	Disks struct {
+		S3 struct {
+			Key      string
+			Secret   string
+			Endpoint string
+			Bucket   string
+		}
+	}
 }
 
 var (

@@ -1,4 +1,4 @@
-package stream
+package streamx
 
 import (
 	"encoding/json"

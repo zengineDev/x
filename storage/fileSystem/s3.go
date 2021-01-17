@@ -1,4 +1,4 @@
-package disk
+package diskx
 
 import (
 	"github.com/aws/aws-sdk-go/aws"

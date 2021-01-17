@@ -1,4 +1,4 @@
-package intermittent
+package intermittentx
 
 import (
 	"context"

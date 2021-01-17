@@ -61,7 +61,7 @@ func (c DatabaseConfig) Validate() error {
 
 func (c DatabaseConfig) ConnectionString() string {
 	return fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=require",
+		"password=%s dbname=%s sslmode=require statement_cache_mode=describe",
 		c.Host, c.Port, c.User, c.Password, c.Database)
 }
 
@@ -71,8 +71,8 @@ type Configuration struct {
 	DB    DatabaseConfig `json:"db"`
 	Redis RedisConfig    `json:"redis"`
 	Nats  struct {
-		Url string
-	}
+		Url string `json:"url"`
+	} `json:"nats"`
 	Disks struct {
 		S3 struct {
 			Key      string

@@ -2,11 +2,11 @@ package streamx
 
 import (
 	"encoding/json"
-	"github.com/cloudevents/sdk-go/v2/event"
 	"github.com/nats-io/nats.go"
 	log "github.com/sirupsen/logrus"
-	"github.com/zengineDev/x/configx"
 	"sync"
+
+	"github.com/zengineDev/x/configx"
 )
 
 var once sync.Once
@@ -35,20 +35,15 @@ func Connection() *NatsCon {
 	return instance
 }
 
-type BroadcastableContract interface {
-	ToCloudEvent() event.Event
-	OnSubject() string
-}
-
-func Broadcast(e BroadcastableContract) error {
+func Broadcast(data interface{}, subject string) error {
 	n := Connection()
 
-	bytes, err := json.Marshal(e.ToCloudEvent())
+	bytes, err := json.Marshal(data)
 	if err != nil {
 		return err
 	}
 
-	natsErr := n.Con.Publish(e.OnSubject(), bytes)
+	natsErr := n.Con.Publish(subject, bytes)
 	if natsErr != nil {
 		log.Error(natsErr)
 	}

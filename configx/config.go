@@ -16,6 +16,12 @@ type LogConfig struct {
 	Level string `json:"level"`
 }
 
+type AuthenticationConfig struct {
+	Keystore struct {
+		URL string `json:"url"`
+	} `json:"keystore"`
+}
+
 type AppConfig struct {
 	Name        string `json:"name"`
 	Version     string `json:"version"`
@@ -66,10 +72,11 @@ func (c DatabaseConfig) ConnectionString() string {
 }
 
 type Configuration struct {
-	App   AppConfig      `json:"app"`
-	Log   LogConfig      `json:"log"`
-	DB    DatabaseConfig `json:"db"`
-	Redis RedisConfig    `json:"redis"`
+	App   AppConfig            `json:"app"`
+	Auth  AuthenticationConfig `json:"auth"`
+	Log   LogConfig            `json:"log"`
+	DB    DatabaseConfig       `json:"db"`
+	Redis RedisConfig          `json:"redis"`
 	Nats  struct {
 		Url string `json:"url"`
 	} `json:"nats"`

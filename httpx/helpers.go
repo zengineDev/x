@@ -2,6 +2,7 @@ package httpx
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -24,4 +25,17 @@ func GetJWTFromRequest(r *http.Request) jwtx.Token {
 func WriteJson(w http.ResponseWriter, d interface{}) error {
 	w.Header().Set("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(d)
+}
+
+func ReadJson(r *http.Request, i interface{}) error {
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal(reqBody, &i)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

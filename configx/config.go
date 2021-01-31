@@ -45,6 +45,14 @@ type RedisConfig struct {
 	Password string `json:"password"`
 }
 
+type UrlProp struct {
+	Url string `json:"url"`
+}
+
+type Services struct {
+	MDB UrlProp `json:"mdb"`
+}
+
 func (c DatabaseConfig) Validate() error {
 	if c.Host == "" {
 		return errors.New("database host is required")
@@ -88,6 +96,7 @@ type Configuration struct {
 			Bucket   string
 		}
 	}
+	Services Services `json:"services"`
 }
 
 var (

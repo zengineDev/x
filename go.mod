@@ -7,7 +7,7 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.4.8
 	github.com/go-resty/resty/v2 v2.4.0
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/kr/text v0.2.0 // indirect

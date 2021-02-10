@@ -38,11 +38,11 @@ type FailedResponse struct {
 	Message string `json:"message"`
 }
 
-// Keys for authentication related keys in the context
+// AuthenticationContextKey
 type AuthenticationContextKey string
 
 var (
-	// Key for an jwtx.jwt in the context
+	// JwtContextKey
 	JwtContextKey AuthenticationContextKey = "auth"
 )
 

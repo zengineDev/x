@@ -18,7 +18,7 @@ func StripBearerPrefixFromTokenString(tok string) (string, error) {
 }
 
 func GetJWTFromRequest(r *http.Request) jwtx.Token {
-	user := r.Context().Value("auth")
+	user := r.Context().Value(JwtContextKey)
 	return user.(jwtx.Token)
 }
 

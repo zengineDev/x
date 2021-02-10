@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/jackc/pgx/v4"
 	log "github.com/sirupsen/logrus"
-	"os"
 	"sync"
 
 	"github.com/zengineDev/x/configx"
@@ -25,8 +24,7 @@ func Connection() *DriverPg {
 		cfg := configx.GetConfig()
 		conn, err := pgx.Connect(context.Background(), cfg.DB.ConnectionString())
 		if err != nil {
-			log.Error(os.Stderr, "Unable to connect to database: %v\n", err)
-			os.Exit(1)
+			log.Error(err)
 		}
 		//defer conn.Close(context.Background())
 

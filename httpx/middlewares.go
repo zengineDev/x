@@ -38,6 +38,14 @@ type FailedResponse struct {
 	Message string `json:"message"`
 }
 
+// AuthenticationContextKey
+type AuthenticationContextKey string
+
+var (
+	// JwtContextKey
+	JwtContextKey AuthenticationContextKey = "auth"
+)
+
 func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handler {
 	keystore, err := jwkx.NewFromUrl(jwkUrl)
 	if err != nil {
@@ -51,6 +59,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "bearer token missing"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -60,6 +71,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "invalid token string"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -69,6 +83,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "the token is expired"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -80,6 +97,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "not authorized"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -91,6 +111,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "not authorized"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -102,10 +125,13 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "not authorized"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "auth", token)
+			ctx := context.WithValue(r.Context(), JwtContextKey, token)
 			next.ServeHTTP(w, r.WithContext(ctx))
 
 		})

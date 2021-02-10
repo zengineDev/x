@@ -25,6 +25,9 @@ func (res Response) Json(body interface{}) {
 	}
 
 	data, err := json.Marshal(resBody)
+	if err != nil {
+		log.Error(err)
+	}
 	_, err = res.writer.Write(data)
 
 	if err != nil {
@@ -38,6 +41,9 @@ func (res Response) ValidationErrors(errors ValidationResponse) {
 	res.writer.WriteHeader(http.StatusUnprocessableEntity)
 
 	data, err := json.Marshal(errors)
+	if err != nil {
+		log.Error(err)
+	}
 	_, err = res.writer.Write(data)
 
 	if err != nil {
@@ -56,6 +62,9 @@ func (res Response) ErrorAsJson(err error) {
 	res.writer.WriteHeader(http.StatusBadRequest)
 
 	data, err := json.Marshal(resBody)
+	if err != nil {
+		log.Error(err)
+	}
 	_, err = res.writer.Write(data)
 
 	if err != nil {

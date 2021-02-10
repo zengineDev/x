@@ -9,9 +9,9 @@ import (
 	"encoding/base32"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"
 )
@@ -66,15 +66,18 @@ func Parse(rawTokenString string) (Token, error) {
 	}
 
 	dataH, err := base64.RawURLEncoding.DecodeString(tokenParts[0])
+	if err != nil {
+		return Token{}, err
+	}
 	dataP, err := base64.RawURLEncoding.DecodeString(tokenParts[1])
-
-	fmt.Println(string(dataH))
-
 	if err != nil {
 		return Token{}, err
 	}
 
 	err = json.Unmarshal(dataH, &header) // This is kind of strange
+	if err != nil {
+		return Token{}, err
+	}
 	err = json.Unmarshal(dataP, &claims)
 
 	if err != nil {
@@ -94,13 +97,17 @@ func (t *Token) Verify(pubKey *rsa.PublicKey) error {
 	tokenParts := strings.Split(t.RawToken, ".")
 
 	s, err := DecodeSegment(t.Signature)
+	if err != nil {
+		return err
+	}
 
 	f := crypto.SHA256.New()
-	f.Write([]byte(strings.Join([]string{tokenParts[0], tokenParts[1]}, ".")))
-
+	_, err = f.Write([]byte(strings.Join([]string{tokenParts[0], tokenParts[1]}, ".")))
+	if err != nil {
+		return err
+	}
 	err = rsa.VerifyPKCS1v15(pubKey, crypto.SHA256, f.Sum(nil), s)
 	if err != nil {
-		fmt.Print(err)
 		return err
 	}
 
@@ -108,11 +115,12 @@ func (t *Token) Verify(pubKey *rsa.PublicKey) error {
 }
 
 func (t *Token) Sign(signingString string, key *rsa.PrivateKey) (string, error) {
-	// encode the token parts
-
 	f := crypto.SHA256.New()
 
-	f.Write([]byte(signingString))
+	_, err := f.Write([]byte(signingString))
+	if err != nil {
+		return "", err
+	}
 
 	// Sign the string and return the encoded bytes
 	if sigBytes, err := rsa.SignPKCS1v15(rand.Reader, key, crypto.SHA256, f.Sum(nil)); err == nil {
@@ -142,7 +150,7 @@ func (t *Token) SignedString(key *rsa.PrivateKey) (string, error) {
 func (t *Token) SigningString() (string, error) {
 	var err error
 	parts := make([]string, 2)
-	for i, _ := range parts {
+	for i := range parts {
 		var jsonValue []byte
 		if i == 0 {
 			if jsonValue, err = json.Marshal(t.Header); err != nil {
@@ -192,9 +200,14 @@ func KeyIDFromCryptoKey(pubKey *rsa.PublicKey) string {
 	//   ABCD:EFGH:IJKL:MNOP:QRST:UVWX:YZ23:4567:ABCD:EFGH:IJKL:MNOP
 	derBytes, err := x509.MarshalPKIXPublicKey(pubKey)
 	if err != nil {
+		log.Error(err)
 		return ""
 	}
 	hasher := crypto.SHA256.New()
-	hasher.Write(derBytes)
+	_, err = hasher.Write(derBytes)
+	if err != nil {
+		log.Error(err)
+		return ""
+	}
 	return keyIDEncode(hasher.Sum(nil)[:30])
 }

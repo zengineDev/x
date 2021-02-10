@@ -26,7 +26,7 @@ func Connection() *NatsCon {
 		con, err := nats.Connect(cfg.Nats.Url)
 
 		if err != nil {
-			log.Fatal("Failed to connect to nats: %s", err)
+			log.Error(err)
 		}
 
 		instance = &NatsCon{Con: con}

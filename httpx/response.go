@@ -56,6 +56,9 @@ func (res Response) ErrorAsJson(err error) {
 	res.writer.WriteHeader(http.StatusBadRequest)
 
 	data, err := json.Marshal(resBody)
+	if err != nil {
+		log.Error(err)
+	}
 	_, err = res.writer.Write(data)
 
 	if err != nil {

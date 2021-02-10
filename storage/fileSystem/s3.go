@@ -5,6 +5,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	log "github.com/sirupsen/logrus"
 	"sync"
 
 	"github.com/zengineDev/x/configx"
@@ -30,8 +31,13 @@ func GetDiskConnection() *Disk {
 			Region:      aws.String("us-east-1"),
 		}
 
-		newSession := session.New(s3Config)
-		s3Client := s3.New(newSession)
+		s, err := session.NewSession(s3Config)
+		if err != nil {
+			log.Error(err)
+			return
+		}
+
+		s3Client := s3.New(s)
 
 		instance = &Disk{D: s3Client}
 

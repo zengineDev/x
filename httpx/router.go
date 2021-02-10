@@ -90,10 +90,6 @@ func (r *Router) Resource(path string, ctr ControllerContract) {
 
 }
 
-// How dose i use this package after all
-
-// r.get("", hanlder)
-
 func (r Router) ListenAndServe() {
 	c := configx.GetConfig()
 	srv := &http.Server{

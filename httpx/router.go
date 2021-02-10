@@ -102,6 +102,6 @@ func (r Router) ListenAndServe() {
 
 	err := srv.ListenAndServe()
 	if err != nil {
-
+		log.Error(err)
 	}
 }

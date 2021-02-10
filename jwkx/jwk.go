@@ -67,9 +67,8 @@ func (j *JWK) ToPublicKey() (*rsa.PublicKey, error) {
 	if err != nil {
 		return publicKey, err
 	}
-	var pubKey *rsa.PublicKey
-	pubKey = parsedKey.(*rsa.PublicKey)
-	return pubKey, nil
+	p := parsedKey.(*rsa.PublicKey)
+	return p, nil
 }
 
 func (j *JWK) ToPEM() (string, error) {
@@ -106,6 +105,9 @@ func (j *JWK) ToPEM() (string, error) {
 
 	var out bytes.Buffer
 	err = pem.Encode(&out, block)
+	if err != nil {
+		return "", err
+	}
 
 	return out.String(), nil
 

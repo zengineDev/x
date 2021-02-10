@@ -97,6 +97,9 @@ func (t *Token) Verify(pubKey *rsa.PublicKey) error {
 	tokenParts := strings.Split(t.RawToken, ".")
 
 	s, err := DecodeSegment(t.Signature)
+	if err != nil {
+		return err
+	}
 
 	f := crypto.SHA256.New()
 	_, err = f.Write([]byte(strings.Join([]string{tokenParts[0], tokenParts[1]}, ".")))

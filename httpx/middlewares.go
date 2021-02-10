@@ -59,6 +59,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "bearer token missing"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -68,6 +71,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "invalid token string"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -77,6 +83,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "the token is expired"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -88,6 +97,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "not authorized"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -99,6 +111,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "not authorized"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 
@@ -110,6 +125,9 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				resBody := FailedResponse{Message: "not authorized"}
 				data, _ := json.Marshal(resBody)
 				_, err = w.Write(data)
+				if err != nil {
+					log.Error(err)
+				}
 				return
 			}
 

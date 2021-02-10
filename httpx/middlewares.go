@@ -38,6 +38,12 @@ type FailedResponse struct {
 	Message string `json:"message"`
 }
 
+type AuthenticationContextKey string
+
+var (
+	JwtContextKey AuthenticationContextKey = "auth"
+)
+
 func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handler {
 	keystore, err := jwkx.NewFromUrl(jwkUrl)
 	if err != nil {
@@ -105,7 +111,7 @@ func AuthenticationMiddleware(jwkUrl string) func(next http.Handler) http.Handle
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "auth", token)
+			ctx := context.WithValue(r.Context(), JwtContextKey, token)
 			next.ServeHTTP(w, r.WithContext(ctx))
 
 		})

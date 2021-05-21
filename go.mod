@@ -3,7 +3,7 @@ module github.com/zengineDev/x
 go 1.15
 
 require (
-	github.com/aws/aws-sdk-go v1.37.14
+	github.com/aws/aws-sdk-go v1.38.44
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.5.0
 	github.com/go-resty/resty/v2 v2.5.0

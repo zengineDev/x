@@ -9,9 +9,9 @@ import (
 	"encoding/base32"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/google/uuid"
+	"github.com/gofrs/uuid"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
+	"log"
 	"strings"
 	"time"
 )
@@ -200,13 +200,13 @@ func KeyIDFromCryptoKey(pubKey *rsa.PublicKey) string {
 	//   ABCD:EFGH:IJKL:MNOP:QRST:UVWX:YZ23:4567:ABCD:EFGH:IJKL:MNOP
 	derBytes, err := x509.MarshalPKIXPublicKey(pubKey)
 	if err != nil {
-		log.Error(err)
+		log.Fatalln(err)
 		return ""
 	}
 	hasher := crypto.SHA256.New()
 	_, err = hasher.Write(derBytes)
 	if err != nil {
-		log.Error(err)
+		log.Fatalln(err)
 		return ""
 	}
 	return keyIDEncode(hasher.Sum(nil)[:30])

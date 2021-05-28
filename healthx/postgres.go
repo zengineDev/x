@@ -2,12 +2,11 @@ package healthx
 
 import (
 	"context"
-
-	persistentx "github.com/zengineDev/x/storage/persistent"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type PostgresConnectionCheck struct {
-	Conn *persistentx.DriverPg
+	Conn *pgxpool.Conn
 	ID   string
 }
 
@@ -18,7 +17,7 @@ func (c *PostgresConnectionCheck) Run() HealthCheckStatusContract {
 		ID:         c.ID,
 	}
 
-	err := c.Conn.Con.Ping(context.Background())
+	err := c.Conn.Conn().Ping(context.Background())
 	if err != nil {
 		result.Failed = true
 		result.StatusText = "disconnected"

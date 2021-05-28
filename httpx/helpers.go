@@ -5,8 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-
-	"github.com/zengineDev/x/jwtx"
 )
 
 func StripBearerPrefixFromTokenString(tok string) (string, error) {
@@ -15,11 +13,6 @@ func StripBearerPrefixFromTokenString(tok string) (string, error) {
 		return tok[7:], nil
 	}
 	return tok, nil
-}
-
-func GetJWTFromRequest(r *http.Request) jwtx.Token {
-	user := r.Context().Value(JwtContextKey)
-	return user.(jwtx.Token)
 }
 
 func WriteJson(w http.ResponseWriter, d interface{}) error {

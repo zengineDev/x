@@ -38,6 +38,7 @@ type Claims struct {
 	NotBefore    int64        `json:"nbf,omitempty"`
 	Scope        string       `json:"scope"`
 	Audience     []string     `json:"aud,omitempty"`
+	Nonce        string       `json:"nonce,omitempty"`
 	HasuraClaims HasuraClaims `json:"https://hasura.io/jwt/claims"`
 }
 
